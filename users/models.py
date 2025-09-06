@@ -44,6 +44,7 @@ class CustomUser(BaseModel, AbstractUser):
             user=self,
             verify_type=verify_type
         )
+        return code
 
     def check_username(self):
         if not self.username:
@@ -52,7 +53,8 @@ class CustomUser(BaseModel, AbstractUser):
                 self.username = f"{self.username}+{str(random.randint(0, 100))}"
 
     def check_email(self):
-        self.email = self.email.lower()
+        if self.email:
+            self.email = self.email.lower()
 
     def check_pass(self):
         if not self.password:
@@ -76,8 +78,9 @@ class CustomUser(BaseModel, AbstractUser):
         self.hashing_pass()
 
     def save(self, *args, **kvargs):
-        self.clean()
         super(CustomUser, self).save(*args, **kvargs)
+        self.clean()
+        super(CustomUser, self).save(update_fields=['username', 'email', 'password'])
 
 
 EXPIRATION_PHONE = 2

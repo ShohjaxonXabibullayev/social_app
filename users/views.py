@@ -3,9 +3,9 @@ from datetime import datetime
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from django.shortcuts import render
-from .serializers import SignUpSerializer
+from .serializers import SignUpSerializer, ChangeInfoUserSerializer
 from .models import CustomUser, CODE_VERIFIED, NEW, VIA_PHONE, VIA_EMAIL
-from rest_framework.generics import ListCreateAPIView
+from rest_framework.generics import ListCreateAPIView, UpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -92,6 +92,24 @@ class GetNewCodeVerify(APIView):
                 'status':status.HTTP_400_BAD_REQUEST
             }
 
+class ChangeInfoUserAPi(UpdateAPIView):
+    serializer_class = ChangeInfoUserSerializer
 
+    def get_object(self, request):
+        return self.request.user
 
+    def update(self, request, *args, **kwargs):
+        super(ChangeInfoUserAPi, self).update(*args, **kwargs)
+        data = {
+            'msg':"Ma'lumotlar yangilandi",
+            'status':status.HTTP_200_OK
+        }
+        return Response(data)
 
+    def partial_update(self, request, *args, **kwargs):
+        super(ChangeInfoUserAPi, self).update(*args, **kwargs)
+        data = {
+            'msg': "Ma'lumotlar yangilandi",
+            'status': status.HTTP_200_OK
+        }
+        return Response(data)

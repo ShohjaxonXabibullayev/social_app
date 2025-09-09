@@ -89,7 +89,7 @@ class CustomUser(BaseModel, AbstractUser):
 
 
 EXPIRATION_PHONE = 2
-EXPIRATION_EMAIL = 5
+EXPIRATION_EMAIL = 2
 
 
 class CodeVerified(BaseModel):

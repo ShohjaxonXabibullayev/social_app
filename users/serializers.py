@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
-
+from shared.utility import valid_username
 from shared.utility import chech_email_or_phone_number
-from .models import CustomUser, VIA_EMAIL, VIA_PHONE
+from .models import CustomUser, VIA_EMAIL, VIA_PHONE, CODE_VERIFIED
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -83,3 +83,36 @@ class SignUpSerializer(serializers.ModelSerializer):
         data = super(SignUpSerializer, self).to_representation(instance)
         data.update(instance.token())
         return data
+
+class ChangeInfoUserSerializer(serializers.Serializer):
+    first_name = serializers.CharField(write_only=True, required=True)
+    last_name = serializers.CharField(write_only=True, required=True)
+    username = serializers.CharField(write_only=True, required=True)
+    password = serializers.CharField(write_only=True, required=True)
+    password_confirm = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, data):
+        if data.get('password') != data.get('password_confirm'):
+            raise ValidationError("parollar mos emas")
+
+        return data
+
+    def username_validate(self, username):
+        valid_username(username)
+        return username
+
+    def update(self, instance, validated_data):
+        instance.first_name = validated_data.get('first_name', instance.first_name)
+        instance.last_name = validated_data.get('last_name', instance.last__name)
+        instance.username = validated_data.get('username')
+        instance.password = validated_data.get('password', instance.first_name, None)
+        if instance.password:
+            instance.set_password(validated_data.get('password'))
+
+        if instance.auth_status == CODE_VERIFIED:
+            instance.auth_status == DONE
+        instance.save()
+        return instance
+
+
+

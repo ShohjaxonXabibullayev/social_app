@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from shared.utility import valid_username
 from shared.utility import chech_email_or_phone_number
-from .models import CustomUser, VIA_EMAIL, VIA_PHONE, CODE_VERIFIED
+from .models import CustomUser, VIA_EMAIL, VIA_PHONE, CODE_VERIFIED, DONE
 
 
 class SignUpSerializer(serializers.ModelSerializer):
@@ -94,12 +94,10 @@ class ChangeInfoUserSerializer(serializers.Serializer):
     def validate(self, data):
         if data.get('password') != data.get('password_confirm'):
             raise ValidationError("parollar mos emas")
-
+        if not valid_username(data.get('username')):
+            raise ValidationError("Username mukammal emas")
         return data
 
-    def username_validate(self, username):
-        valid_username(username)
-        return username
 
     def update(self, instance, validated_data):
         instance.first_name = validated_data.get('first_name', instance.first_name)

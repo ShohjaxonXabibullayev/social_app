@@ -94,12 +94,13 @@ class GetNewCodeVerify(APIView):
 
 class ChangeInfoUserAPi(UpdateAPIView):
     serializer_class = ChangeInfoUserSerializer
+    http_method_names = ['put', 'patch']
 
     def get_object(self, request):
         return self.request.user
 
     def update(self, request, *args, **kwargs):
-        super(ChangeInfoUserAPi, self).update(*args, **kwargs)
+        super(ChangeInfoUserAPi, self).update(request, *args, **kwargs)
         data = {
             'msg':"Ma'lumotlar yangilandi",
             'status':status.HTTP_200_OK
@@ -107,7 +108,7 @@ class ChangeInfoUserAPi(UpdateAPIView):
         return Response(data)
 
     def partial_update(self, request, *args, **kwargs):
-        super(ChangeInfoUserAPi, self).update(*args, **kwargs)
+        super(ChangeInfoUserAPi, self).partial_update(request, *args, **kwargs)
         data = {
             'msg': "Ma'lumotlar yangilandi",
             'status': status.HTTP_200_OK
